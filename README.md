@@ -201,4 +201,6 @@ POST /mcp
 | **Streaming** | Server-Sent Events (SSE) |
 
 ## 🎥 Demo Video
-Here is the Demo of the Voice-Agent along with Opik Observability
+Here is the Demo of the Voice-Agent along with Opik Observability  
+
+📽️ [Watch Demo Video](https://drive.google.com/file/d/1ukTjDP07IuNwVkEPbddYjhAlD033SUaU/view?usp=sharing)
