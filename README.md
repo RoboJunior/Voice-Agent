@@ -129,7 +129,7 @@ flowchart TD
 ### Prerequisites
 - Python 3.8+
 - Poetry
-- API keys for: Deepgram, Google ADK, ElevenLabs
+- API keys for: Deepgram, Google API Key, ElevenLabs
 
 ### Installation
 
