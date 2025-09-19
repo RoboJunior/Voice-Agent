@@ -1,0 +1,22 @@
+[project]
+name = "app"
+version = "0.1.0"
+description = "Agent tools"
+authors = [
+    {name = "Jeyaraman",email = "119618019+RoboJunior@users.noreply.github.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13,<4.0"
+dependencies = [
+    "fastmcp (>=2.12.3,<3.0.0)",
+    "httpx (>=0.28.1,<0.29.0)",
+    "aiohttp (>=3.12.15,<4.0.0)",
+    "qdrant-client[fastembed] (>=1.15.1,<2.0.0)"
+]
+
+[tool.poetry.scripts]
+mcp_server = "app.main:start_mcp_server"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"

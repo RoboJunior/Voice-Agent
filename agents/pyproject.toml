@@ -1,0 +1,28 @@
+[project]
+name = "app"
+version = "0.1.0"
+description = "A simple voice agent"
+authors = [
+    {name = "Jeyaraman",email = "119618019+RoboJunior@users.noreply.github.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13,<4.0"
+dependencies = [
+    "sounddevice (>=0.5.2,<0.6.0)",
+    "websockets (>=15.0.1,<16.0.0)",
+    "deepgram-sdk (>=4.8.1,<5.0.0)",
+    "python-dotenv (>=1.1.1,<2.0.0)",
+    "pyaudio (>=0.2.14,<0.3.0)",
+    "google-adk (>=1.14.1,<2.0.0)",
+    "colorama (>=0.4.6,<0.5.0)",
+    "elevenlabs (>=2.15.0,<3.0.0)",
+    "fastmcp (>=2.12.3,<3.0.0)",
+    "opik (>=1.8.50,<2.0.0)"
+]
+
+[tool.poetry.scripts]
+voice_agent = "app.main:start_voice_agent"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
