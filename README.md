@@ -32,96 +32,128 @@ The system is designed with a **modular ingestion pipeline**, an **MCP server fo
 ```mermaid
 flowchart TD
     subgraph InputModule["Input Processing Module"]
-            STT["Deepgram STT Service"]
-            UserInput["User Speech Input"]
-            Queue["Asyncio Message Queue"]
+        UserInput["User<br>Speech Input"]
+        STT["Deepgram<br>STT Service"]
+        Queue["Asyncio<br>Message Queue"]
     end
+    
     subgraph FactoryPattern["Factory Design Pattern"]
-            Crawl4AI["Crawl4AI Web Crawler"]
-            URLSource["URL Source"]
-            PyPDF["PyPDF Text Extractor<br>(Page-by-Page)"]
-            PDFSource["PDF Source"]
-            FactoryInterface["Ingestion Factory Interface"]
-            NewSource["Future Sources<br>(Modular Design)"]
+        URLSource["URL Source"]
+        PDFSource["PDF Source"]
+        NewSource["Future Sources<br>(Modular Design)"]
+        FactoryInterface["Ingestion<br>Factory Interface"]
+        Crawl4AI["Crawl4AI<br>Web Crawler"]
+        PyPDF["PyPDF<br>Text Extractor<br>(Page-by-Page)"]
     end
-    subgraph IngestionModule["Knowledge Ingestion Module"]
-            FactoryPattern
-            SemanticChunker["LangChain Semantic Chunker"]
-            Embeddings["BAAI/bge-small-en<br>Text Embedding Model"]
-            VectorStore["Qdrant Vector Store<br>(GCP Free Instance)"]
+    
+    subgraph ProcessingLayer["Text Processing Layer"]
+        SemanticChunker["Semantic<br>Text Chunker"]
+        Embeddings["Text<br>Embeddings"]
+        VectorStore["Vector<br>Database"]
     end
+    
     subgraph MCPLayer["MCP Server Layer"]
-            MCPServer["MCP Server"]
-            LLMAgent["Google ADK LLM Agent<br>(Gemini 2.5 Flash)"]
-            SearchRoute["Ingestion Service<br>/search Route"]
+        MCPServer["MCP Server"]
+        SearchRoute["Ingestion Service<br>/search Route"]
     end
+    
     subgraph KnowledgeRetrieval["Knowledge Retrieval System"]
-            SimilarityResults["Similar Vectors"]
+        SimilarityResults["Similar Vectors<br>BAAI/bge-small-en<br>Vector Search"]
     end
+    
     subgraph AgentModule["Agent Processing Module"]
-            MCPLayer
-            KnowledgeRetrieval
+        LLMAgent["Google ADK<br>LLM Agent<br>(Gemini 2.5 Flash)"]
     end
+    
     subgraph MonitoringModule["Agent Monitoring"]
-            OpikTracing["Opik Agent Monitoring"]
+        OpikTracing["Opik<br>Agent Monitoring"]
     end
+    
     subgraph OutputModule["Output Delivery Module"]
-            SSE["Server-Sent Events"]
-            PostmanClient["Postman/Client Application"]
-            TTS["ElevenLabs TTS Service"]
-            UserOutput["User Audio Response"]
+        SSE["Server-Sent Events"]
+        PostmanClient["Postman /<br>Client Application"]
+        TTS["ElevenLabs<br>TTS Service"]
+        UserOutput["User<br>Audio Response"]
     end
-        UserInput -- "Speech-to-Text" --> STT
-        STT --> Queue
-        URLSource --> Crawl4AI
-        PDFSource --> PyPDF
-        NewSource -.-> FactoryInterface
-        Crawl4AI --> SemanticChunker
-        PyPDF --> SemanticChunker
-        FactoryInterface -.-> SemanticChunker
-        SemanticChunker -- Text Chunks --> Embeddings
-        Embeddings -- Vector Embeddings --> VectorStore
-        STT -- Direct Text Input --> LLMAgent
-        LLMAgent <-- Streamable HTTP Protocol --> MCPServer
-        MCPServer -- API Call --> SearchRoute
-        SearchRoute -- Similarity Query --> VectorStore
-        VectorStore -- "BAAI/bge-small-en<br>Vector Search" --> SimilarityResults
-        SimilarityResults --> SearchRoute
-        SearchRoute -- Knowledge Context --> MCPServer
-        MCPServer -- Tool Response --> LLMAgent
-        LLMAgent -- Processed Response --> Queue
-        LLMAgent -. Traces & Metrics .-> OpikTracing
-        Queue -- "Real-time Stream" --> SSE
-        SSE --> PostmanClient
-        LLMAgent -- Text Response --> TTS
-        TTS -- Audio Synthesis --> UserOutput
-        VectorStore -. GCP Deployment .-> GCPCloud["Google Cloud Platform<br>(Free Instance)"]
-
-        UserInput:::userStyle
-        STT:::serviceStyle
-        Crawl4AI:::serviceStyle
-        PyPDF:::serviceStyle
-        NewSource:::factoryStyle
-        FactoryInterface:::factoryStyle
-        SemanticChunker:::serviceStyle
-        Embeddings:::serviceStyle
-        VectorStore:::databaseStyle
-        LLMAgent:::serviceStyle
-        MCPServer:::serviceStyle
-        SearchRoute:::serviceStyle
-        OpikTracing:::monitoringStyle
-        SSE:::serviceStyle
-        PostmanClient:::userStyle
-        TTS:::serviceStyle
-        UserOutput:::userStyle
-        GCPCloud:::databaseStyle
-        classDef moduleStyle fill:#f8f9fa,stroke:#495057,stroke-width:2px,color:#000
-        classDef serviceStyle fill:#e3f2fd,stroke:#1976d2,stroke-width:2px,color:#000
-        classDef databaseStyle fill:#fff8e1,stroke:#f57c00,stroke-width:2px,color:#000
-        classDef userStyle fill:#e8f5e8,stroke:#388e3c,stroke-width:2px,color:#000
-        classDef configStyle fill:#fce4ec,stroke:#c2185b,stroke-width:2px,color:#000
-        classDef monitoringStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000
-        classDef factoryStyle fill:#e0f2f1,stroke:#00796b,stroke-width:2px,color:#000
+    
+    subgraph CloudInfra["Cloud Infrastructure"]
+        GCPCloud["Google Cloud Platform<br>(Free Instance)"]
+    end
+    
+    %% Main Flow Connections
+    UserInput --> STT
+    STT --> Queue
+    
+    %% Data Ingestion Flow
+    URLSource --> Crawl4AI
+    PDFSource --> PyPDF
+    NewSource -.-> FactoryInterface
+    Crawl4AI --> SemanticChunker
+    PyPDF --> SemanticChunker
+    FactoryInterface -.-> SemanticChunker
+    
+    %% Processing Flow
+    SemanticChunker --> Embeddings
+    Embeddings --> VectorStore
+    
+    %% Agent Processing Flow
+    STT --> LLMAgent
+    LLMAgent <--> MCPServer
+    MCPServer --> SearchRoute
+    SearchRoute --> VectorStore
+    VectorStore --> SimilarityResults
+    SimilarityResults --> SearchRoute
+    SearchRoute --> MCPServer
+    MCPServer --> LLMAgent
+    
+    %% Output Flow
+    LLMAgent --> Queue
+    Queue --> SSE
+    SSE --> PostmanClient
+    LLMAgent --> TTS
+    TTS --> UserOutput
+    
+    %% Monitoring
+    LLMAgent -.-> OpikTracing
+    
+    %% Cloud Connection
+    VectorStore -.-> GCPCloud
+    
+    %% Styles
+    classDef moduleStyle fill:#f8f9fa,stroke:#495057,stroke-width:2px,color:#000
+    classDef serviceStyle fill:#e3f2fd,stroke:#1976d2,stroke-width:2px,color:#000
+    classDef databaseStyle fill:#fff8e1,stroke:#f57c00,stroke-width:2px,color:#000
+    classDef userStyle fill:#e8f5e8,stroke:#388e3c,stroke-width:2px,color:#000
+    classDef monitoringStyle fill:#f3e5f5,stroke:#7b1fa2,stroke-width:2px,color:#000
+    classDef factoryStyle fill:#e0f2f1,stroke:#00796b,stroke-width:2px,color:#000
+    classDef cloudStyle fill:#e1f5fe,stroke:#0288d1,stroke-width:2px,color:#000
+    
+    %% Apply styles
+    UserInput:::userStyle
+    UserOutput:::userStyle
+    PostmanClient:::userStyle
+    
+    STT:::serviceStyle
+    Crawl4AI:::serviceStyle
+    PyPDF:::serviceStyle
+    SemanticChunker:::serviceStyle
+    Embeddings:::serviceStyle
+    LLMAgent:::serviceStyle
+    MCPServer:::serviceStyle
+    SearchRoute:::serviceStyle
+    SSE:::serviceStyle
+    TTS:::serviceStyle
+    Queue:::serviceStyle
+    
+    VectorStore:::databaseStyle
+    SimilarityResults:::databaseStyle
+    
+    OpikTracing:::monitoringStyle
+    
+    NewSource:::factoryStyle
+    FactoryInterface:::factoryStyle
+    
+    GCPCloud:::cloudStyle
 ```
 
 ## 🚀 Quick Start
