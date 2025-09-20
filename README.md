@@ -49,7 +49,7 @@ flowchart TD
     subgraph ProcessingLayer["Text Processing Layer"]
         SemanticChunker["Semantic<br>Text Chunker"]
         Embeddings["Text<br>Embeddings"]
-        VectorStore["Vector<br>Database"]
+        VectorStore["Vector<br>Database<br>(Qdrant)"]
     end
     
     subgraph MCPLayer["MCP Server Layer"]
