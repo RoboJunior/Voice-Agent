@@ -136,7 +136,7 @@ flowchart TD
 ```bash
 git clone https://github.com/RoboJunior/Voice-Agent.git
 
-cd voice-rag-agent/
+cd Voice-Agent/
 
 # Install ingestion
 cd ingestion/
